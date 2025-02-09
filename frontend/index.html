@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+        .result { font-size: 20px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Card Game</h1>
+    <button id="playButton">Play</button>
+    <button id="shuffleButton">Shuffle Deck</button>
+    <button id="statsButton">Show Stats</button>
+    
+    <div id="result" class="result"></div>
+    <div id="stats" class="result"></div>
+
+    <script>
+        document.getElementById('playButton').addEventListener('click', () => {
+            fetch('http://localhost:8000/play', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const resultText = `Banker: ${data.banker_value}, Player: ${data.player_value}, Winner: ${data.winner}`;
+                    document.getElementById('result').innerHTML = resultText;
+                } else {
+                    document.getElementById('result').innerHTML = 'Error: ' + data.message;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('shuffleButton').addEventListener('click', () => {
+            fetch('http://localhost:8000/shuffle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Inform the user that the deck is shuffled
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('statsButton').addEventListener('click', () => {
+            fetch('http://localhost:8000/stats')
+            .then(response => response.json())
+            .then(data => {
+                const statsText = `Banker Wins: ${data.banker_wins}, Player Wins: ${data.player_wins}, Draws: ${data.draws}`;
+                document.getElementById('stats').innerHTML = statsText;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
